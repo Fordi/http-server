@@ -171,7 +171,7 @@ vows.describe('http-server').addBatch({
     topic: function () {
       var server = httpServer.createServer({
         root: root,
-        brotli: true,
+        brotli: 'true',
         gzip: true
       });
       server.listen(8084);
@@ -363,6 +363,28 @@ vows.describe('http-server').addBatch({
       var server = httpServer.createServer({
         root: root,
         ext: true
+      });
+      server.listen(8085);
+      this.callback(null, server);
+    },
+    'and a file with no extension is requested with default options,': {
+      topic: function () {
+        request('http://127.0.0.1:8085/htmlButNot', this.callback);
+      },
+      'content-type should be text/html': function (res) {
+        assert.equal(res.statusCode, 200);
+        assert.match(res.headers['content-type'], /^text\/html/);
+      }
+    },
+    teardown: function (server) {
+      server.close();
+    }
+  },
+  'When auto-ext is enabled from CLI': {
+    topic: function () {
+      var server = httpServer.createServer({
+        root: root,
+        ext: 'true'
       });
       server.listen(8085);
       this.callback(null, server);
